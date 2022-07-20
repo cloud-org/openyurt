@@ -67,10 +67,12 @@ func NewRemoteProxy(remoteServer *url.URL,
 	healthChecker healthchecker.HealthChecker,
 	filterManager *filter.Manager,
 	stopCh <-chan struct{}) (*RemoteProxy, error) {
+
 	currentTransport := transportMgr.CurrentTransport()
 	if currentTransport == nil {
 		return nil, fmt.Errorf("could not get current transport when init proxy backend(%s)", remoteServer.String())
 	}
+
 	bearerTransport := transportMgr.BearerTransport()
 	if bearerTransport == nil {
 		return nil, fmt.Errorf("could not get bearer transport when init proxy backend(%s)", remoteServer.String())
@@ -83,7 +85,7 @@ func NewRemoteProxy(remoteServer *url.URL,
 
 	proxyBackend := &RemoteProxy{
 		checker:              healthChecker,
-		reverseProxy:         httputil.NewSingleHostReverseProxy(remoteServer),
+		reverseProxy:         httputil.NewSingleHostReverseProxy(remoteServer), // 反向代理
 		cacheMgr:             cacheMgr,
 		remoteServer:         remoteServer,
 		filterManager:        filterManager,
@@ -95,7 +97,9 @@ func NewRemoteProxy(remoteServer *url.URL,
 	}
 
 	proxyBackend.reverseProxy.Transport = proxyBackend
+	// modify response, cache something and return
 	proxyBackend.reverseProxy.ModifyResponse = proxyBackend.modifyResponse
+	// A negative value means to flush immediately after each write to the client.
 	proxyBackend.reverseProxy.FlushInterval = -1
 	proxyBackend.reverseProxy.ErrorHandler = proxyBackend.errorHandler
 
@@ -147,6 +151,7 @@ func (rp *RemoteProxy) modifyResponse(resp *http.Response) error {
 		}
 	}
 
+	// 成功响应
 	if resp.StatusCode >= http.StatusOK && resp.StatusCode <= http.StatusPartialContent {
 		// prepare response content type
 		reqContentType, _ := util.ReqContentTypeFrom(ctx)

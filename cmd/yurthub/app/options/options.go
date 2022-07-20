@@ -87,7 +87,7 @@ func NewYurtHubOptions() *YurtHubOptions {
 		HeartbeatFailedRetry:      3,
 		HeartbeatHealthyThreshold: 2,
 		HeartbeatTimeoutSeconds:   2,
-		MaxRequestInFlight:        250,
+		MaxRequestInFlight:        250, // max concurrent request
 		RootDir:                   filepath.Join("/var/lib/", projectinfo.GetHubName()),
 		EnableProfiling:           true,
 		EnableDummyIf:             true,

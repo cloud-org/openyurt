@@ -113,6 +113,7 @@ func Run(cfg *config.YurtHubConfiguration, stopCh <-chan struct{}) error {
 	trace++
 
 	var healthChecker healthchecker.HealthChecker
+	// edge mode need check kube api-server health
 	if cfg.WorkingMode == util.WorkingModeEdge {
 		klog.Infof("%d. create health checker for remote servers ", trace)
 		healthChecker, err = healthchecker.NewHealthChecker(cfg, transportManager, stopCh)
@@ -172,6 +173,7 @@ func Run(cfg *config.YurtHubConfiguration, stopCh <-chan struct{}) error {
 	trace++
 
 	klog.Infof("%d. new reverse proxy handler for remote servers", trace)
+	// get proxy http.Handler
 	yurtProxyHandler, err := proxy.NewYurtReverseProxyHandler(cfg, cacheMgr, transportManager, healthChecker, certManager, tenantMgr, stopCh)
 
 	if err != nil {
@@ -190,7 +192,7 @@ func Run(cfg *config.YurtHubConfiguration, stopCh <-chan struct{}) error {
 		klog.Infof("%d. new %s server and begin to serve, dummy proxy server: %s, secure dummy proxy server: %s", trace, projectinfo.GetHubName(), cfg.YurtHubProxyServerDummyAddr, cfg.YurtHubProxyServerSecureDummyAddr)
 	}
 
-	// start shared informers before start hub server
+	// tag: start shared informers before start hub server
 	cfg.SharedFactory.Start(stopCh)
 	cfg.YurtSharedFactory.Start(stopCh)
 

@@ -131,7 +131,10 @@ func NewLoadBalancer(
 	certManager interfaces.YurtCertificateManager,
 	filterManager *filter.Manager,
 	stopCh <-chan struct{}) (LoadBalancer, error) {
+
+	// kube api-servers backends
 	backends := make([]*RemoteProxy, 0, len(remoteServers))
+
 	for i := range remoteServers {
 		b, err := NewRemoteProxy(remoteServers[i], cacheMgr, transportMgr, healthChecker, filterManager, stopCh)
 		if err != nil {
@@ -140,11 +143,13 @@ func NewLoadBalancer(
 		}
 		backends = append(backends, b)
 	}
+
 	if len(backends) == 0 {
 		return nil, fmt.Errorf("no backends can be used by lb")
 	}
 
 	var algo loadBalancerAlgo
+	// 负载均衡模式
 	switch lbMode {
 	case "rr":
 		algo = &rrLoadBalancerAlgo{backends: backends}

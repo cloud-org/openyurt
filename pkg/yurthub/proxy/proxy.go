@@ -100,6 +100,7 @@ func NewYurtReverseProxyHandler(
 }
 
 func (p *yurtReverseProxy) buildHandlerChain(handler http.Handler) http.Handler {
+	// add middleware
 	handler = util.WithRequestTrace(handler)
 	handler = util.WithRequestContentType(handler)
 	if p.cacheMgr != nil {

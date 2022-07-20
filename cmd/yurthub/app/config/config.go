@@ -108,6 +108,7 @@ func Complete(options *options.YurtHubOptions) (*YurtHubConfiguration, error) {
 		}
 	}
 
+	// create disk storage
 	storageManager, err := factory.CreateStorage(options.DiskCachePath)
 	if err != nil {
 		klog.Errorf("could not create storage manager, %v", err)
@@ -129,6 +130,7 @@ func Complete(options *options.YurtHubOptions) (*YurtHubConfiguration, error) {
 	}
 	tenantNs := util.ParseTenantNs(options.YurtHubCertOrganizations)
 	registerInformers(sharedFactory, yurtSharedFactory, workingMode, serviceTopologyFilterEnabled(options), options.NodePoolName, options.NodeName, tenantNs)
+	// create filter manager
 	filterManager, err := createFilterManager(options, sharedFactory, yurtSharedFactory, serializerManager, storageWrapper, us[0].Host, proxySecureServerDummyAddr, proxySecureServerAddr)
 
 	if err != nil {

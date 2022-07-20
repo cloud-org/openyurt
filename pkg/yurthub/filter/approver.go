@@ -43,7 +43,10 @@ type approver struct {
 
 var (
 	supportedVerbs           = sets.NewString("get", "list", "watch")
-	defaultWhiteListRequests = sets.NewString(reqKey(projectinfo.GetHubName(), "configmaps", "list"), reqKey(projectinfo.GetHubName(), "configmaps", "watch"))
+	defaultWhiteListRequests = sets.NewString(
+		reqKey(projectinfo.GetHubName(), "configmaps", "list"),
+		reqKey(projectinfo.GetHubName(), "configmaps", "watch"),
+	)
 	defaultReqKeyToName      = map[string]string{
 		reqKey("kubelet", "services", "list"):                    MasterServiceFilterName,
 		reqKey("kubelet", "services", "watch"):                   MasterServiceFilterName,

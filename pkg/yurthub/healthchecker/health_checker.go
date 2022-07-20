@@ -94,6 +94,7 @@ func NewHealthChecker(cfg *config.YurtHubConfiguration, tp transport.Interface, 
 			return nil, err
 		}
 		hcm.checkers[remoteServer.String()] = c
+		// init check
 		if c.check() {
 			c.setHealthy(true)
 		} else {

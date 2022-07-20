@@ -141,6 +141,7 @@ func (ssf *endpointsFilter) SetSerializerManager(s *serializer.SerializerManager
 }
 
 func (ssf *endpointsFilter) Filter(req *http.Request, rc io.ReadCloser, stopCh <-chan struct{}) (int, io.ReadCloser, error) {
+	// informer sync
 	if ok := cache.WaitForCacheSync(stopCh, ssf.nodeSynced, ssf.serviceSynced, ssf.nodePoolSynced); !ok {
 		return 0, rc, nil
 	}
